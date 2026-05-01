@@ -50,6 +50,103 @@ void prosesKeluar(int detik) {
 }
 
 
+// csv area
+void simpanAkun(Akun daftar_akun[], int total_akun) {
+    ofstream file(FILE_AKUN);
+    for (int i = 0; i < total_akun; i++) {
+        file << daftar_akun[i].username << "," << daftar_akun[i].password << "," << daftar_akun[i].role << "\n";
+    }
+    file.close();
+}
+
+void muatAkun(Akun daftar_akun[], int &total_akun) {
+    ifstream file(FILE_AKUN);
+    string line, token;
+    total_akun = 0;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        getline(ss, daftar_akun[total_akun].username, ',');
+        getline(ss, daftar_akun[total_akun].password, ',');
+        getline(ss, daftar_akun[total_akun].role, ',');
+        total_akun++;
+    }
+    file.close();
+
+    if (total_akun == 0) {
+        daftar_akun[0].username = "admin";
+        daftar_akun[0].password = "admin123";
+        daftar_akun[0].role = "admin";
+        total_akun++;
+        simpanAkun(daftar_akun, total_akun);
+    }
+}
+
+void simpanPegawai(Pegawai daftar_pegawai[], int total_pegawai) {
+    ofstream file(FILE_PEGAWAI);
+    for (int i = 0; i < total_pegawai; i++) {
+        file << daftar_pegawai[i].username << "," 
+             << daftar_pegawai[i].nama_pegawai << "," 
+             << daftar_pegawai[i].umur << "," 
+             << daftar_pegawai[i].jabatan << "," 
+             << daftar_pegawai[i].lokasi.kota << "," 
+             << daftar_pegawai[i].lokasi.jalan << "," 
+             << daftar_pegawai[i].is_active << "\n";
+    }
+    file.close();
+}
+
+void muatPegawai(Pegawai daftar_pegawai[], int &total_pegawai) {
+    ifstream file(FILE_PEGAWAI);
+    string line, token;
+    total_pegawai = 0;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        getline(ss, daftar_pegawai[total_pegawai].username, ',');
+        getline(ss, daftar_pegawai[total_pegawai].nama_pegawai, ',');
+        
+        getline(ss, token, ',');
+        daftar_pegawai[total_pegawai].umur = stoi(token);
+        
+        getline(ss, daftar_pegawai[total_pegawai].jabatan, ',');
+        getline(ss, daftar_pegawai[total_pegawai].lokasi.kota, ',');
+        getline(ss, daftar_pegawai[total_pegawai].lokasi.jalan, ',');
+        
+        getline(ss, token, ',');
+        daftar_pegawai[total_pegawai].is_active = (token == "1");
+        
+        total_pegawai++;
+    }
+    file.close();
+    perbaikiPointer(daftar_pegawai, total_pegawai);
+}
+
+void simpanAbsensi(Absensi daftar_absensi[], int total_absensi) {
+    ofstream file(FILE_ABSENSI);
+    for (int i = 0; i < total_absensi; i++) {
+        file << daftar_absensi[i].username << "," 
+             << daftar_absensi[i].tanggal << "," 
+             << daftar_absensi[i].waktu << "," 
+             << daftar_absensi[i].status << "\n";
+    }
+    file.close();
+}
+
+void muatAbsensi(Absensi daftar_absensi[], int &total_absensi) {
+    ifstream file(FILE_ABSENSI);
+    string line;
+    total_absensi = 0;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        getline(ss, daftar_absensi[total_absensi].username, ',');
+        getline(ss, daftar_absensi[total_absensi].tanggal, ',');
+        getline(ss, daftar_absensi[total_absensi].waktu, ',');
+        getline(ss, daftar_absensi[total_absensi].status, ',');
+        total_absensi++;
+    }
+    file.close();
+}
+
+
 // autentikasi
 string loginAkun(Akun daftar_akun[], int total_akun, string &role_output) {
     bersihkanLayar();
