@@ -12,9 +12,9 @@
 using namespace std;
 
 // konfigurasi csv
-const string FILE_AKUN = "akun.csv";
-const string FILE_PEGAWAI = "pegawai.csv";
-const string FILE_ABSENSI = "absensi.csv";
+const string FILE_AKUN = "csv/akun.csv";
+const string FILE_PEGAWAI = "csv/pegawai.csv";
+const string FILE_ABSENSI = "csv/absensi.csv";
 
 void bersihkanLayar() {
     #ifdef _WIN32
