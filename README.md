@@ -13,13 +13,15 @@ Repositori ini merupakan tempat pengumpulan **Program**, **Flowchart**, dan **La
 │   └── flowchart.drawio (diagram alur logika sistem)
 │
 ├── 📁 Program
-│   ├── kebab.cpp (kode sumber utama)
-│   └── kebab.h (file header dan data models)
-│
-├── 📁 csv
-│   ├── absensi.csv (data presensi pegawai)
-│   ├── akun.csv (data akun pengguna)
-│   └── pegawai.csv (data detail profil pegawai)
+│   ├── main.cpp (titik masuk utama dan alur menu)
+│   ├── kebab.cpp (implementasi fungsi dan logika bisnis)
+│   ├── kebab.h (header, definisi struct, dan prototipe fungsi)
+│   │
+│   └── 📁 csv
+│       ├── absensi.csv (data riwayat presensi)
+│       ├── akun.csv (data kredensial login)
+│       ├── pegawai.csv (data profil dan gaji)
+│       └── log_admin.txt (catatan aktivitas tindakan admin)
 │
 └── 📄 README.md
 </pre>
