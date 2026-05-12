@@ -1,0 +1,5 @@
+[2026-05-12 18:08:56] Login sukses: admin
+[2026-05-12 18:09:31] Menambahkan pegawai baru: icikiwir
+[2026-05-12 18:10:07] Login sukses: admin
+[2026-05-12 18:10:18] Menyetujui cuti riski untuk tgl 2026-05-12
+[2026-05-12 18:16:08] Login sukses: admin
