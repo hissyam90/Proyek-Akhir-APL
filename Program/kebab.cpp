@@ -48,21 +48,52 @@ string formatRupiah(double nominal) {
     return "Rp " + s;
 }
 
+// input string error handling
+string bacaString(const string &prompt) {
+    string input;
+    cout << prompt;
+    getline(cin, input);
+    if (input.empty() || input.find_first_not_of(" \t\r\n") == string::npos) {
+        throw runtime_error("Input tidak boleh kosong atau hanya berupa spasi/tab!");
+    }
+    return input;
+}
+
 int bacaInt(const string &prompt) {
-    int nilai; cout << prompt;
-    if (!(cin >> nilai)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); throw runtime_error("Input harus angka bulat!"); }
+    int nilai;
+    string input;
+    cout << prompt;
+    getline(cin, input);
+    if (input.empty() || input.find_first_not_of(" \t\r\n") == string::npos) {
+        throw runtime_error("Input tidak boleh kosong!");
+    }
+    stringstream ss(input);
+    if (!(ss >> nilai)) {
+        throw runtime_error("Input harus berupa angka bulat!");
+    }
     return nilai;
 }
 
 double bacaDouble(const string &prompt) {
-    double nilai; cout << prompt;
-    if (!(cin >> nilai)) { cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); throw runtime_error("Input harus angka!"); }
+    double nilai;
+    string input;
+    cout << prompt;
+    getline(cin, input);
+    if (input.empty() || input.find_first_not_of(" \t\r\n") == string::npos) {
+        throw runtime_error("Input tidak boleh kosong!");
+    }
+    stringstream ss(input);
+    if (!(ss >> nilai)) {
+        throw runtime_error("Input harus berupa angka!");
+    }
     return nilai;
 }
 
+// functions
 void jeda() {
     cout << "\nTekan Enter untuk melanjutkan...";
-    cin.ignore(numeric_limits<streamsize>::max(), '\n'); cin.get();
+    string dummy;
+    getline(cin, dummy); 
 }
 
 void simpanAkun(Akun daftar_akun[], int total_akun) {
@@ -150,8 +181,14 @@ void ajukanCutiUser(Absensi daftar_absensi[], int &total_absensi, string usernam
     bersihkanLayar(); cout << "\n--- Formulir Pengajuan Cuti ---\n";
     try {
         if (total_absensi >= 300) throw runtime_error("Data absensi penuh!");
-        string tanggal;
-        cout << "Masukkan Tanggal Cuti (YYYY-MM-DD): "; cin >> tanggal;
+        
+        string tanggal = bacaString("Masukkan Tanggal Cuti (YYYY-MM-DD): ");
+        if (tanggal.length() != 10 || tanggal[4] != '-' || tanggal[7] != '-') {
+            throw runtime_error("Format salah! Gunakan format YYYY-MM-DD (Contoh: 2026-12-01).");
+        }
+        for (int i = 0; i < 10; i++) {
+            if (i != 4 && i != 7 && !isdigit(tanggal[i])) throw runtime_error("Karakter tanggal harus berupa angka!");
+        }
         
         daftar_absensi[total_absensi] = {username, tanggal, dapatkanWaktuSekarang(), "Pending Cuti"};
         total_absensi++;
@@ -168,8 +205,18 @@ void kelolaCutiAdmin(Absensi daftar_absensi[], int total_absensi) {
         if (daftar_absensi[i].status == "Pending Cuti") {
             ada_pending = true;
             cout << "\nUsername: " << daftar_absensi[i].username << " | Tanggal Cuti: " << daftar_absensi[i].tanggal;
-            cout << "\nSetujui cuti ini? (Y/N/Skip): ";
-            char pilih; cin >> pilih;
+            
+            string pilihStr;
+            cout << "\nSetujui cuti ini? (Y/N): ";
+            getline(cin, pilihStr);
+            
+            // Validasi string agar kalau dienter kosong tidak error
+            if (pilihStr.empty() || pilihStr.find_first_not_of(" \t\r\n") == string::npos) { 
+                cout << "[!] Input kosong/spasi, dilewati.\n"; 
+                continue; 
+            }
+            
+            char pilih = pilihStr[0];
             if (pilih == 'Y' || pilih == 'y') {
                 daftar_absensi[i].status = "Cuti Approved";
                 catatLogAdmin("Menyetujui cuti " + daftar_absensi[i].username + " untuk tgl " + daftar_absensi[i].tanggal);
@@ -178,6 +225,8 @@ void kelolaCutiAdmin(Absensi daftar_absensi[], int total_absensi) {
                 daftar_absensi[i].status = "Cuti Rejected";
                 catatLogAdmin("Menolak cuti " + daftar_absensi[i].username + " untuk tgl " + daftar_absensi[i].tanggal);
                 cout << "[+] Cuti ditolak.\n";
+            } else { 
+                cout << "[!] Input tidak valid (Hanya boleh Y/N), dilewati.\n"; 
             }
         }
     }
@@ -219,26 +268,28 @@ void cetakSlipGaji(Pegawai daftar_pegawai[], int total_pegawai, Absensi daftar_a
 }
 
 string loginAkun(Akun daftar_akun[], int total_akun, string &role_output) {
-    bersihkanLayar(); int sisa_kesempatan = 3; string input_nama, input_password;
+    bersihkanLayar(); int sisa_kesempatan = 3; 
     cout << "\n--- Login Sistem ---\n";
     while (sisa_kesempatan > 0) {
-        cout << "Username : "; cin >> input_nama;
-        cout << "Password : "; cin >> input_password;
-        for (int i = 0; i < total_akun; i++) {
-            if (input_nama == daftar_akun[i].username && input_password == daftar_akun[i].password) {
-                role_output = daftar_akun[i].role;
-                cout << "\n[+] Login Berhasil! Selamat datang, " << input_nama << ".\n";
-                if (role_output == "admin") catatLogAdmin("Login sukses: " + input_nama);
-                return input_nama;
+        try {
+            string input_nama = bacaString("Username : ");
+            string input_password = bacaString("Password : ");
+            
+            for (int i = 0; i < total_akun; i++) {
+                if (input_nama == daftar_akun[i].username && input_password == daftar_akun[i].password) {
+                    role_output = daftar_akun[i].role;
+                    cout << "\n[+] Login Berhasil! Selamat datang, " << input_nama << ".\n";
+                    if (role_output == "admin") catatLogAdmin("Login sukses: " + input_nama);
+                    return input_nama;
+                }
             }
-        }
-        sisa_kesempatan--;
-        if (sisa_kesempatan > 0) cout << "[!] Username atau Password salah! Sisa percobaan: " << sisa_kesempatan << "\n\n";
+            sisa_kesempatan--;
+            if (sisa_kesempatan > 0) cout << "[!] Username atau Password salah! Sisa percobaan: " << sisa_kesempatan << "\n\n";
+        } catch (const exception &e) { cout << "[!] " << e.what() << "\n\n"; }
     }
     cout << "\n[X] Akses ditolak.\n"; jeda(); return "";
 }
 
-// [BARU] Fungsi dinamis untuk mengecek apakah hari ini pegawai tersebut cuti/izin/sakit
 string cekStatusKerja(string username, bool is_active, Absensi daftar_absensi[], int total_absensi) {
     if (!is_active) return "Resign";
     
@@ -255,89 +306,112 @@ string cekStatusKerja(string username, bool is_active, Absensi daftar_absensi[],
 }
 
 void lihatPegawai(Pegawai daftar_pegawai[], int total_pegawai, bool filter_aktif, Absensi daftar_absensi[], int total_absensi) {
-    cout << setfill('-') << setw(115) << "-" << "\n" << setfill(' ');
-    cout << left << setw(15) << "Username" << setw(20) << "Nama" << setw(6)  << "Umur" << setw(20) << "Jabatan" << setw(20) << "Alamat" << setw(18) << "Gaji" << "Status\n";
-    cout << setfill('-') << setw(115) << "-" << "\n" << setfill(' ');
+    // Memperlebar batas tabel menjadi 146 dan menyesuaikan tata letak (Tanpa substr)
+    cout << setfill('-') << setw(146) << "-" << "\n" << setfill(' ');
+    cout << left << setw(15) << "Username" << setw(25) << "Nama" << setw(6)  << "Umur" 
+         << setw(20) << "Jabatan" << setw(40) << "Alamat" << setw(20) << "Gaji" << "Status\n";
+    cout << setfill('-') << setw(146) << "-" << "\n" << setfill(' ');
+    
     bool ada_data = false;
     for (int i = 0; i < total_pegawai; i++) {
         if (daftar_pegawai[i].is_active == filter_aktif) {
-            ada_data = true; string alamat = daftar_pegawai[i].lokasi.kota + ", " + daftar_pegawai[i].lokasi.jalan;
-            if (alamat.length() > 18) alamat = alamat.substr(0, 15) + "...";
-            cout << left << setw(15) << daftar_pegawai[i].username << setw(20) << daftar_pegawai[i].nama_pegawai << setw(6)  << daftar_pegawai[i].umur
-                 << setw(20) << *(daftar_pegawai[i].jabatan_ptr) << setw(20) << alamat << setw(18) << formatRupiah(daftar_pegawai[i].gaji)  
+            ada_data = true; 
+            string alamat = daftar_pegawai[i].lokasi.kota + ", " + daftar_pegawai[i].lokasi.jalan;
+            // Menghapus baris pemotong string (substr), membiarkan string tampil utuh
+            cout << left << setw(15) << daftar_pegawai[i].username << setw(25) << daftar_pegawai[i].nama_pegawai << setw(6)  << daftar_pegawai[i].umur
+                 << setw(20) << *(daftar_pegawai[i].jabatan_ptr) << setw(40) << alamat << setw(20) << formatRupiah(daftar_pegawai[i].gaji)  
                  << cekStatusKerja(daftar_pegawai[i].username, daftar_pegawai[i].is_active, daftar_absensi, total_absensi) << "\n";
         }
     }
     if (!ada_data) cout << "  (Belum ada data pegawai di kategori ini)\n";
-    cout << setfill('-') << setw(115) << "-" << "\n" << setfill(' ');
+    cout << setfill('-') << setw(146) << "-" << "\n" << setfill(' ');
 }
 
 void tambahPegawai(Pegawai daftar_pegawai[], int &total_pegawai, Akun daftar_akun[], int &total_akun) {
     bersihkanLayar(); cout << "\n--- Tambah Pegawai & Akun Baru ---\n";
     try {
         if (total_akun >= 100 || total_pegawai >= 100) throw runtime_error("Kapasitas penuh!");
-        string new_username, new_password;
-        cout << "Buat Username   : "; cin >> new_username;
+        
+        string new_username = bacaString("Buat Username   : ");
         for (int i = 0; i < total_akun; i++) { if (daftar_akun[i].username == new_username) throw runtime_error("Username digunakan!"); }
-        cout << "Buat Password   : "; cin >> new_password;
+        
+        string new_password = bacaString("Buat Password   : ");
         if (new_password.length() < 4) throw runtime_error("Password min 4 karakter!");
         
         daftar_akun[total_akun] = {new_username, new_password, "user"}; total_akun++; simpanAkun(daftar_akun, total_akun);
 
         int idx = total_pegawai; daftar_pegawai[idx].username  = new_username; daftar_pegawai[idx].is_active = true;
-        cout << "Nama Lengkap    : "; cin.ignore(); getline(cin, daftar_pegawai[idx].nama_pegawai);
+        
+        daftar_pegawai[idx].nama_pegawai = bacaString("Nama Lengkap    : ");
+        
         daftar_pegawai[idx].umur = bacaInt("Umur            : ");
-        cout << "Jabatan         : "; getline(cin >> ws, daftar_pegawai[idx].jabatan);
-        cout << "Kota Domisili   : "; getline(cin, daftar_pegawai[idx].lokasi.kota);
-        cout << "Alamat Jalan    : "; getline(cin, daftar_pegawai[idx].lokasi.jalan);
-        daftar_pegawai[idx].gaji = bacaDouble("Gaji (Rp)       : ");
+        if (daftar_pegawai[idx].umur <= 0) throw runtime_error("Umur tidak valid (harus lebih dari 0)!");
+
+        daftar_pegawai[idx].jabatan = bacaString("Jabatan         : ");
+        daftar_pegawai[idx].lokasi.kota = bacaString("Kota Domisili   : ");
+        daftar_pegawai[idx].lokasi.jalan = bacaString("Alamat Jalan    : ");
+        
+        double input_gaji = bacaDouble("Gaji (Rp)       : ");
+        if (input_gaji <= 0) throw runtime_error("Gaji tidak boleh nol atau minus!");
+        daftar_pegawai[idx].gaji = input_gaji;
 
         total_pegawai++; perbaikiPointer(daftar_pegawai, total_pegawai); simpanPegawai(daftar_pegawai, total_pegawai);
         catatLogAdmin("Menambahkan pegawai baru: " + new_username);
         cout << "\n[+] Data pegawai dan akun berhasil didaftarkan.\n";
-    } catch (const exception &e) { cout << "\n[!] Proses Gagal: " << e.what() << "\n"; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
+    } catch (const exception &e) { cout << "\n[!] Proses Gagal: " << e.what() << "\n"; }
     jeda();
 }
 
 void ubahPegawaiAdmin(Pegawai daftar_pegawai[], int total_pegawai, Akun daftar_akun[], int total_akun, Absensi daftar_absensi[], int total_absensi) {
     bersihkanLayar(); lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi);
     try {
-        string target; cout << "\nMasukkan Username Pegawai yang ingin diubah: "; cin >> target;
+        string target = bacaString("\nMasukkan Username Pegawai yang ingin diubah: ");
         int idx = -1;
         for (int i = 0; i < total_pegawai; i++) { if (daftar_pegawai[i].username == target && daftar_pegawai[i].is_active) { idx = i; break; } }
         if (idx == -1) throw runtime_error("Pegawai tidak ditemukan!");
+        
         int pilihan = bacaInt("\n1. Edit Data\n2. Edit Gaji\n3. Reset Sandi\nPilih: ");
 
         if (pilihan == 1) {
-            cout << "Jabatan Baru    : "; getline(cin >> ws, daftar_pegawai[idx].jabatan);
-            cout << "Kota Baru       : "; getline(cin, daftar_pegawai[idx].lokasi.kota);
-            cout << "Jalan Baru      : "; getline(cin, daftar_pegawai[idx].lokasi.jalan);
+            string t_jab = bacaString("Jabatan Baru    : ");
+            string t_kota = bacaString("Kota Baru       : ");
+            string t_jalan = bacaString("Jalan Baru      : ");
+
+            daftar_pegawai[idx].jabatan = t_jab;
+            daftar_pegawai[idx].lokasi.kota = t_kota;
+            daftar_pegawai[idx].lokasi.jalan = t_jalan;
+
             perbaikiPointer(daftar_pegawai, total_pegawai); simpanPegawai(daftar_pegawai, total_pegawai);
             catatLogAdmin("Mengubah data profil pegawai: " + target);
             cout << "\n[+] Profil diperbarui.\n";
         } else if (pilihan == 2) {
-            daftar_pegawai[idx].gaji = bacaDouble("Gaji Baru (Rp): ");
+            double gaji_baru = bacaDouble("Gaji Baru (Rp): ");
+            if (gaji_baru <= 0) throw runtime_error("Gaji tidak boleh bernilai nol atau negatif (minus)!");
+            
+            daftar_pegawai[idx].gaji = gaji_baru;
             simpanPegawai(daftar_pegawai, total_pegawai);
             catatLogAdmin("Mengubah gaji pegawai: " + target);
             cout << "\n[+] Gaji diperbarui.\n";
         } else if (pilihan == 3) {
             for (int j = 0; j < total_akun; j++) {
                 if (daftar_akun[j].username == target) {
-                    string pass_baru; cout << "Sandi Baru: "; cin >> pass_baru;
+                    string pass_baru = bacaString("Sandi Baru: ");
+                    if (pass_baru.length() < 4) throw runtime_error("Sandi minimal 4 karakter!");
+                    
                     daftar_akun[j].password = pass_baru; simpanAkun(daftar_akun, total_akun);
                     catatLogAdmin("Mereset sandi pegawai: " + target);
                     cout << "\n[+] Sandi direset.\n"; break;
                 }
             }
         }
-    } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; cin.clear(); cin.ignore(numeric_limits<streamsize>::max(), '\n'); }
+    } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; }
     jeda();
 }
 
 void hapusPegawaiSoftDelete(Pegawai daftar_pegawai[], int total_pegawai, Absensi daftar_absensi[], int total_absensi) {
     bersihkanLayar(); lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi);
     try {
-        string target; cout << "\nMasukkan Username Pegawai (Resign): "; cin >> target;
+        string target = bacaString("\nMasukkan Username Pegawai (Resign): ");
         for (int i = 0; i < total_pegawai; i++) {
             if (daftar_pegawai[i].username == target && daftar_pegawai[i].is_active) {
                 daftar_pegawai[i].is_active = false; simpanPegawai(daftar_pegawai, total_pegawai);
@@ -346,25 +420,50 @@ void hapusPegawaiSoftDelete(Pegawai daftar_pegawai[], int total_pegawai, Absensi
             }
         }
         throw runtime_error("Pegawai tidak ditemukan.");
-    } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; cin.clear(); cin.ignore(10000, '\n'); }
+    } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; }
     jeda();
 }
 
 void rekapAbsensiAdmin(Absensi daftar_absensi[], int total_absensi, Pegawai daftar_pegawai[], int total_pegawai) {
-    bersihkanLayar(); int pilihan = bacaInt("\n--- Rekap Absensi ---\n1. Semua\n2. Per Username\n3. Laporan Kehadiran Pegawai\nPilih: ");
-    if (pilihan == 1 || pilihan == 2) {
-        string target = ""; if (pilihan == 2) { cout << "Username: "; cin >> target; }
-        for (int i = 0; i < total_absensi; i++) {
-            if (pilihan == 1 || daftar_absensi[i].username == target)
-                cout << daftar_absensi[i].username << " | " << daftar_absensi[i].tanggal << " | " << daftar_absensi[i].status << "\n";
+    bersihkanLayar(); 
+    try {
+        int pilihan = bacaInt("\n--- Rekap Absensi ---\n1. Semua\n2. Per Username\n3. Laporan Kehadiran Pegawai\nPilih: ");
+        if (pilihan == 1 || pilihan == 2) {
+            string target = ""; 
+            if (pilihan == 2) target = bacaString("Username: ");
+            
+            cout << "\n" << setfill('-') << setw(50) << "-" << "\n" << setfill(' ');
+            cout << left << setw(15) << "Username" << setw(15) << "Tanggal" << "Status\n";
+            cout << setfill('-') << setw(50) << "-" << "\n" << setfill(' ');
+            
+            bool ada_data = false;
+            for (int i = 0; i < total_absensi; i++) {
+                if (pilihan == 1 || daftar_absensi[i].username == target) {
+                    cout << left << setw(15) << daftar_absensi[i].username 
+                         << setw(15) << daftar_absensi[i].tanggal 
+                         << daftar_absensi[i].status << "\n";
+                    ada_data = true;
+                }
+            }
+            if (!ada_data) cout << " (Tidak ada data absensi)\n";
+            cout << setfill('-') << setw(50) << "-" << "\n" << setfill(' ');
+            
+        } else if (pilihan == 3) {
+            cout << "\n" << setfill('-') << setw(40) << "-" << "\n" << setfill(' ');
+            cout << left << setw(15) << "Username" << "Total Hadir\n";
+            cout << setfill('-') << setw(40) << "-" << "\n" << setfill(' ');
+            
+            for (int i = 0; i < total_pegawai; i++) {
+                if (!daftar_pegawai[i].is_active) continue;
+                int hadir = 0; 
+                for (int j = 0; j < total_absensi; j++) { 
+                    if (daftar_absensi[j].username == daftar_pegawai[i].username && daftar_absensi[j].status == "Hadir") hadir++; 
+                }
+                cout << left << setw(15) << daftar_pegawai[i].username << hadir << " Hari\n";
+            }
+            cout << setfill('-') << setw(40) << "-" << "\n" << setfill(' ');
         }
-    } else if (pilihan == 3) {
-        for (int i = 0; i < total_pegawai; i++) {
-            if (!daftar_pegawai[i].is_active) continue;
-            int hadir = 0; for (int j = 0; j < total_absensi; j++) { if (daftar_absensi[j].username == daftar_pegawai[i].username && daftar_absensi[j].status == "Hadir") hadir++; }
-            cout << daftar_pegawai[i].username << " | Total Hadir: " << hadir << "\n";
-        }
-    }
+    } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; }
     jeda();
 }
 
@@ -383,11 +482,14 @@ void inputAbsensi(Absensi daftar_absensi[], int &total_absensi, string username)
     try {
         string hari_ini = dapatkanTanggalSekarang();
         for (int i = 0; i < total_absensi; i++) { if (daftar_absensi[i].username == username && daftar_absensi[i].tanggal == hari_ini) throw runtime_error("Sudah absen/cuti hari ini!"); }
+        
         int pilihan = bacaInt("1. Hadir\n2. Sakit\n3. Izin\nPilih: ");
+        if (pilihan < 1 || pilihan > 3) throw runtime_error("Pilihan tidak valid!");
+        
         string status = (pilihan == 1) ? "Hadir" : (pilihan == 2) ? "Sakit" : "Izin";
         daftar_absensi[total_absensi] = {username, hari_ini, dapatkanWaktuSekarang(), status}; total_absensi++;
         simpanAbsensi(daftar_absensi, total_absensi); cout << "\n[+] Presensi " << status << " dicatat.\n";
-    } catch (const exception &e) { cout << "\n[!] " << e.what() << "\n"; cin.clear(); cin.ignore(10000, '\n'); }
+    } catch (const exception &e) { cout << "\n[!] " << e.what() << "\n"; }
     jeda();
 }
 

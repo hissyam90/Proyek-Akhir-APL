@@ -3,3 +3,19 @@
 [2026-05-12 18:10:07] Login sukses: admin
 [2026-05-12 18:10:18] Menyetujui cuti riski untuk tgl 2026-05-12
 [2026-05-12 18:16:08] Login sukses: admin
+[2026-05-12 20:24:30] Login sukses: admin
+[2026-05-12 20:24:55] Mengubah gaji pegawai: riski
+[2026-05-12 20:28:56] Login sukses: admin
+[2026-05-12 20:29:20] Menyetujui cuti riski untuk tgl 2026-05-13
+[2026-05-12 20:35:41] Mengubah gaji pegawai: riski
+[2026-05-17 21:25:26] Login sukses: admin
+[2026-05-17 21:27:22] Mengubah gaji pegawai: riski
+[2026-05-17 21:37:10] Login sukses: admin
+[2026-05-17 21:38:17] Menolak cuti riski untuk tgl 2026-05-18
+[2026-05-17 21:38:20] Menolak cuti riski untuk tgl kwado
+[2026-05-17 21:46:05] Login sukses: admin
+[2026-05-17 21:46:35] Menambahkan pegawai baru: andri
+[2026-05-17 21:49:31] Mengubah gaji pegawai: riski
+[2026-05-17 21:50:53] Login sukses: admin
+[2026-05-17 21:50:57] Menolak cuti andri untuk tgl 1231-21-12
+[2026-05-17 21:52:23] Login sukses: admin

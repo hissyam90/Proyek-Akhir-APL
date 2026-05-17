@@ -47,6 +47,7 @@ void prosesKeluar(int detik);
 string formatRupiah(double nominal);
 int bacaInt(const string &prompt);
 double bacaDouble(const string &prompt);
+string bacaString(const string &prompt);
 void jeda();
 
 // file handling
