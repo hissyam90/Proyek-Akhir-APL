@@ -1,11 +1,52 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#include <string>
+#include <windows.h>
 #include "kebab.h"
 
 using namespace std;
 
+namespace Warna {
+    const string RESET   = "\033[0m";
+    const string MERAH   = "\033[31m";
+    const string HIJAU   = "\033[32m";
+    const string KUNING  = "\033[33m";
+    const string BIRU    = "\033[34m";
+    const string MAGENTA = "\033[35m";
+    const string CYAN    = "\033[36m";
+    const string PUTIH   = "\033[97m";
+    const string BOLD    = "\033[1m";
+    const string DIM     = "\033[2m";
+}
+
+void cetakBanner() {
+    cout << Warna::MERAH << Warna::BOLD;
+    cout << "\n";
+    cout << "              ██╗  ██╗███████╗██████╗  █████╗ ██████╗ \n";
+    cout << "              ██║ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔══██╗\n";
+    cout << "              █████╔╝ █████╗  ██████╔╝███████║██████╔╝\n";
+    cout << "              ██╔═██╗ ██╔══╝  ██╔══██╗██╔══██║██╔══██╗\n";
+    cout << "              ██║  ██╗███████╗██████╔╝██║  ██║██████╔╝\n";
+    cout << "              ╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚═════╝ \n";
+    cout << Warna::RESET;
+    cout << Warna::KUNING << Warna::BOLD;
+    cout << "          M A N A J E M E N   K E B A B   C E N D A N A\n";
+    cout << Warna::RESET;
+    cout << "\n";
+    cout << Warna::CYAN << Warna::BOLD;
+    cout << "                   Tanggal : " << dapatkanTanggalSekarang() << "\n";
+    cout << "                   Waktu   : " << dapatkanWaktuSekarang()   << "\n";
+    cout << Warna::RESET << "\n";
+}
+
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(65001);
+    SetConsoleCP(65001);
+    system("cls");
+#endif
+
     Akun    daftar_akun[100];    int total_akun    = 0;
     Pegawai daftar_pegawai[100]; int total_pegawai = 0;
     Absensi daftar_absensi[300]; int total_absensi = 0;
@@ -18,16 +59,46 @@ int main() {
         cout << "\n[CRITICAL ERROR] " << e.what() << "\n"; return 1;
     }
 
+    cetakBanner();
+    cout << Warna::CYAN << "  Memuat sistem kebab";
+    cout << Warna::RESET;
+    for (int i = 0; i < 3; i++) {
+        cout << "." << flush;
+        for (volatile long j = 0; j < 30000000L; j++);
+    }
+    cout << " " << Warna::HIJAU << "\u2713 OK!" << Warna::RESET << "\n";
+    catatLogAdmin("Sistem dimulai pada " + dapatkanTanggalSekarang() + " " + dapatkanWaktuSekarang());
+    jeda();
+
     bool aplikasi_berjalan = true;
     while (aplikasi_berjalan) {
         bersihkanLayar();
-        cout << "\n+----------------------------------------+\n"
-             << "| SISTEM MANAJEMEN PEGAWAI KEBAB CENDANA |\n"
-             << "+----------------------------------------+\n"
-             << " 1. Login Sistem\n 2. Keluar Aplikasi\n ----------------------------------------\n";
-        
+
+        cout << "\n";
+        cout << Warna::BOLD << Warna::BIRU;
+        for (int i = 0; i < 72; i++) cout << '=';
+        cout << "\n";
+        string header = "SELAMAT DATANG  -  MANAJEMEN KEBAB CENDANA";
+        int sp = (72 - (int)header.size()) / 2;
+        cout << string(sp, ' ') << header << "\n";
+        for (int i = 0; i < 72; i++) cout << '=';
+        cout << "\n" << Warna::RESET;
+
+        string datetime = "[" + dapatkanTanggalSekarang() + "  " + dapatkanWaktuSekarang() + "]";
+        int sp2 = (72 - (int)datetime.size()) / 2;
+        cout << string(sp2, ' ') << Warna::KUNING << Warna::BOLD << datetime << Warna::RESET << "\n";
+        cout << Warna::DIM;
+        for (int i = 0; i < 72; i++) cout << '-';
+        cout << Warna::RESET << "\n";
+
+        cout << "  " << Warna::CYAN << "1." << Warna::RESET << " Login Sistem\n";
+        cout << "  " << Warna::MERAH << "0. Keluar Aplikasi\n" << Warna::RESET;
+        cout << Warna::DIM;
+        for (int i = 0; i < 72; i++) cout << '=';
+        cout << Warna::RESET << "\n";
+
         try {
-            int menu_awal = bacaInt(" Pilih menu: ");
+            int menu_awal = bacaInt("  Pilihan: ");
             if (menu_awal == 1) {
                 string current_role = "";
                 string current_user = loginAkun(daftar_akun, total_akun, current_role);
@@ -57,17 +128,15 @@ int main() {
                                              << " 1. Lihat Pegawai Aktif\n 2. Lihat Pegawai Resign\n"
                                              << " 3. Urutkan Berdasarkan Nama (Z-A)\n 4. Urutkan Berdasarkan Usia (Termuda)\n 5. Urutkan Berdasarkan Jabatan (A-Z)\n"
                                              << " 6. Cari Pegawai (Nama)\n 7. Cari Pegawai (Usia)\n 8. Kembali\n ----------------------------------------\n";
-                                        
                                         try {
                                             int pil = bacaInt(" Pilih opsi: ");
-                                            
                                             if (pil == 1) { cout << "\n--- Tabel Data Pegawai Aktif ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); }
                                             else if (pil == 2) { cout << "\n--- Tabel Data Pegawai Resign ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, false, daftar_absensi, total_absensi); jeda(); }
-                                            else if (pil == 3) { mergeSortNama(daftar_pegawai, 0, total_pegawai - 1); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Data Diurutkan Berdasarkan Nama (Menurun) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); } 
-                                            else if (pil == 4) { quickSortUmur(daftar_pegawai, 0, total_pegawai - 1); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Data Diurutkan Berdasarkan Usia (Menaik) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); } 
-                                            else if (pil == 5) { insertionSortJabatan(daftar_pegawai, total_pegawai); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Data Diurutkan Berdasarkan Jabatan (Menaik) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); } 
-                                            else if (pil == 6) { string cari = bacaString(" Masukkan nama target: "); sequentialSearchNama(daftar_pegawai, total_pegawai, cari, daftar_absensi, total_absensi); } 
-                                            else if (pil == 7) { int umur = bacaInt(" Masukkan angka usia target: "); binarySearchUmur(daftar_pegawai, total_pegawai, umur, daftar_absensi, total_absensi); } 
+                                            else if (pil == 3) { mergeSortNama(daftar_pegawai, 0, total_pegawai - 1); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Diurutkan Berdasarkan Nama (Menurun) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); }
+                                            else if (pil == 4) { quickSortUmur(daftar_pegawai, 0, total_pegawai - 1); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Diurutkan Berdasarkan Usia (Menaik) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); }
+                                            else if (pil == 5) { insertionSortJabatan(daftar_pegawai, total_pegawai); perbaikiPointer(daftar_pegawai, total_pegawai); bersihkanLayar(); cout << "\n--- Diurutkan Berdasarkan Jabatan (Menaik) ---\n"; lihatPegawai(daftar_pegawai, total_pegawai, true, daftar_absensi, total_absensi); jeda(); }
+                                            else if (pil == 6) { string cari = bacaString(" Masukkan nama target: "); sequentialSearchNama(daftar_pegawai, total_pegawai, cari, daftar_absensi, total_absensi); }
+                                            else if (pil == 7) { int umur = bacaInt(" Masukkan angka usia target: "); binarySearchUmur(daftar_pegawai, total_pegawai, umur, daftar_absensi, total_absensi); }
                                             else if (pil == 8) { menu_lihat = false; }
                                             else { cout << "\n[!] Pilihan tidak ada.\n"; jeda(); }
                                         } catch (const exception &e) { cout << "\n[!] Error: " << e.what() << "\n"; jeda(); }
@@ -76,8 +145,8 @@ int main() {
                                 }
                                 case 3: ubahPegawaiAdmin(daftar_pegawai, total_pegawai, daftar_akun, total_akun, daftar_absensi, total_absensi); break;
                                 case 4: hapusPegawaiSoftDelete(daftar_pegawai, total_pegawai, daftar_absensi, total_absensi); break;
-                                case 5: rekapAbsensiAdmin(daftar_absensi, total_absensi, daftar_pegawai, total_pegawai); break;  
-                                case 6: laporanGaji(daftar_pegawai, total_pegawai); break;  
+                                case 5: rekapAbsensiAdmin(daftar_absensi, total_absensi, daftar_pegawai, total_pegawai); break;
+                                case 6: laporanGaji(daftar_pegawai, total_pegawai); break;
                                 case 7: kelolaCutiAdmin(daftar_absensi, total_absensi); break;
                                 case 8: lihatLogAdmin(); break;
                                 case 9: sesi_login = false; break;
@@ -112,8 +181,13 @@ int main() {
                         }
                     } catch (const exception &e) { cout << "\n[!] Terjadi kesalahan internal: " << e.what() << "\n"; jeda(); }
                 }
-            } else if (menu_awal == 2) { cout << "\n"; prosesKeluar(3); aplikasi_berjalan = false; }
-            else { cout << "\n[!] Menu tidak valid.\n"; jeda(); }
+            } else if (menu_awal == 0) {
+                cout << Warna::RESET << "\n";
+                prosesKeluar(3);
+                aplikasi_berjalan = false;
+            } else {
+                cout << "\n[!] Menu tidak valid.\n"; jeda();
+            }
         } catch (const exception &e) { cout << "\n[!] Error input: " << e.what() << "\n"; jeda(); }
     }
     return 0;

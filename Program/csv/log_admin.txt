@@ -19,3 +19,22 @@
 [2026-05-17 21:50:53] Login sukses: admin
 [2026-05-17 21:50:57] Menolak cuti andri untuk tgl 1231-21-12
 [2026-05-17 21:52:23] Login sukses: admin
+[2026-05-18 16:14:20] Login sukses: admin
+[2026-05-18 16:34:53] Sistem dimulai pada 2026-05-18 16:34:53
+[2026-05-18 16:35:47] Sistem dimulai pada 2026-05-18 16:35:47
+[2026-05-18 16:38:24] Sistem dimulai pada 2026-05-18 16:38:24
+[2026-05-18 16:41:51] Sistem dimulai pada 2026-05-18 16:41:51
+[2026-05-18 16:44:43] Sistem dimulai pada 2026-05-18 16:44:43
+[2026-05-18 16:50:12] Sistem dimulai pada 2026-05-18 16:50:12
+[2026-05-18 16:52:08] Sistem dimulai pada 2026-05-18 16:52:08
+[2026-05-18 16:53:42] Sistem dimulai pada 2026-05-18 16:53:42
+[2026-05-18 16:54:06] Sistem dimulai pada 2026-05-18 16:54:06
+[2026-05-18 16:54:14] Login sukses: admin
+[2026-05-18 16:55:09] Sistem dimulai pada 2026-05-18 16:55:09
+[2026-05-18 16:55:22] Sistem dimulai pada 2026-05-18 16:55:22
+[2026-05-18 16:58:18] Sistem dimulai pada 2026-05-18 16:58:18
+[2026-05-18 16:58:40] Sistem dimulai pada 2026-05-18 16:58:40
+[2026-05-18 16:59:07] Sistem dimulai pada 2026-05-18 16:59:07
+[2026-05-18 16:59:21] Login sukses: admin
+[2026-05-18 17:01:55] Sistem dimulai pada 2026-05-18 17:01:55
+[2026-05-18 17:16:39] Sistem dimulai pada 2026-05-18 17:16:39
