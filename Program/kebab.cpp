@@ -105,8 +105,18 @@ void simpanAkun(Akun daftar_akun[], int total_akun) {
 void muatAkun(Akun daftar_akun[], int &total_akun) {
     ifstream file(FILE_AKUN); string line; total_akun = 0;
     while (getline(file, line) && total_akun < 100) {
-        if (line.empty()) continue; stringstream ss(line);
-        getline(ss, daftar_akun[total_akun].username, ','); getline(ss, daftar_akun[total_akun].password, ','); getline(ss, daftar_akun[total_akun].role, ',');
+        // Hapus karakter '\r' bawaan Windows di akhir baris
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (line.empty() || line.find_first_not_of(" \t\r\n") == string::npos) continue;
+        
+        stringstream ss(line);
+        string t_user, t_pass, t_role;
+        getline(ss, t_user, ','); getline(ss, t_pass, ','); getline(ss, t_role, ',');
+        
+        // Lewati jika username kosong
+        if(t_user.empty()) continue;
+        
+        daftar_akun[total_akun] = {t_user, t_pass, t_role};
         total_akun++;
     }
     file.close();
@@ -124,14 +134,44 @@ void simpanPegawai(Pegawai daftar_pegawai[], int total_pegawai) {
 }
 
 void muatPegawai(Pegawai daftar_pegawai[], int &total_pegawai) {
-    ifstream file(FILE_PEGAWAI); string line, token; total_pegawai = 0;
+    ifstream file(FILE_PEGAWAI); string line; total_pegawai = 0;
     while (getline(file, line) && total_pegawai < 100) {
-        if (line.empty()) continue; stringstream ss(line);
-        getline(ss, daftar_pegawai[total_pegawai].username, ','); getline(ss, daftar_pegawai[total_pegawai].nama_pegawai, ',');
-        getline(ss, token, ','); daftar_pegawai[total_pegawai].umur = stoi(token);
-        getline(ss, daftar_pegawai[total_pegawai].jabatan, ','); getline(ss, daftar_pegawai[total_pegawai].lokasi.kota, ','); getline(ss, daftar_pegawai[total_pegawai].lokasi.jalan, ',');
-        if (getline(ss, token, ',') && !token.empty()) { try { daftar_pegawai[total_pegawai].gaji = stod(token); } catch (...) { daftar_pegawai[total_pegawai].gaji = 0; } } else { daftar_pegawai[total_pegawai].gaji = 0; }
-        getline(ss, token, ','); daftar_pegawai[total_pegawai].is_active = (token == "1");
+        // Hapus karakter '\r' bawaan Windows di akhir baris
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (line.empty() || line.find_first_not_of(" \t\r\n") == string::npos) continue;
+        
+        stringstream ss(line);
+        string t_user, t_nama, t_umur, t_jab, t_kota, t_jalan, t_gaji, t_aktif;
+        
+        getline(ss, t_user, ',');
+        getline(ss, t_nama, ',');
+        getline(ss, t_umur, ',');
+        getline(ss, t_jab, ',');
+        getline(ss, t_kota, ',');
+        getline(ss, t_jalan, ',');
+        getline(ss, t_gaji, ',');
+        getline(ss, t_aktif, ',');
+        
+        // Lewati baris cacat yang tidak memiliki username
+        if(t_user.empty()) continue;
+        
+        daftar_pegawai[total_pegawai].username = t_user;
+        daftar_pegawai[total_pegawai].nama_pegawai = t_nama;
+        
+        // Try-Catch untuk Umur agar tidak crash saat nilai kosong/salah ketik
+        try { daftar_pegawai[total_pegawai].umur = stoi(t_umur); } 
+        catch (...) { daftar_pegawai[total_pegawai].umur = 0; }
+        
+        daftar_pegawai[total_pegawai].jabatan = t_jab;
+        daftar_pegawai[total_pegawai].lokasi.kota = t_kota;
+        daftar_pegawai[total_pegawai].lokasi.jalan = t_jalan;
+        
+        // Try-Catch untuk Gaji agar tidak crash saat nilai kosong/salah ketik
+        try { daftar_pegawai[total_pegawai].gaji = stod(t_gaji); } 
+        catch (...) { daftar_pegawai[total_pegawai].gaji = 0; }
+        
+        daftar_pegawai[total_pegawai].is_active = (t_aktif.find("1") != string::npos);
+        
         total_pegawai++;
     }
     file.close(); perbaikiPointer(daftar_pegawai, total_pegawai);
@@ -146,9 +186,17 @@ void simpanAbsensi(Absensi daftar_absensi[], int total_absensi) {
 void muatAbsensi(Absensi daftar_absensi[], int &total_absensi) {
     ifstream file(FILE_ABSENSI); string line; total_absensi = 0;
     while (getline(file, line) && total_absensi < 300) {
-        if (line.empty()) continue; stringstream ss(line);
-        getline(ss, daftar_absensi[total_absensi].username, ','); getline(ss, daftar_absensi[total_absensi].tanggal, ',');
-        getline(ss, daftar_absensi[total_absensi].waktu, ','); getline(ss, daftar_absensi[total_absensi].status, ',');
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (line.empty() || line.find_first_not_of(" \t\r\n") == string::npos) continue;
+        
+        stringstream ss(line);
+        string t_user, t_tgl, t_wkt, t_stat;
+        getline(ss, t_user, ','); getline(ss, t_tgl, ',');
+        getline(ss, t_wkt, ','); getline(ss, t_stat, ',');
+        
+        if(t_user.empty()) continue;
+        
+        daftar_absensi[total_absensi] = {t_user, t_tgl, t_wkt, t_stat};
         total_absensi++;
     }
     file.close();
@@ -210,7 +258,6 @@ void kelolaCutiAdmin(Absensi daftar_absensi[], int total_absensi) {
             cout << "\nSetujui cuti ini? (Y/N): ";
             getline(cin, pilihStr);
             
-            // Validasi string agar kalau dienter kosong tidak error
             if (pilihStr.empty() || pilihStr.find_first_not_of(" \t\r\n") == string::npos) { 
                 cout << "[!] Input kosong/spasi, dilewati.\n"; 
                 continue; 
@@ -269,25 +316,35 @@ void cetakSlipGaji(Pegawai daftar_pegawai[], int total_pegawai, Absensi daftar_a
 
 string loginAkun(Akun daftar_akun[], int total_akun, string &role_output) {
     bersihkanLayar(); int sisa_kesempatan = 3; 
-    cout << "\n--- Login Sistem ---\n";
+    
+    cout << "\n";
+    cout << Warna::BOLD << Warna::BIRU;
+    for (int i = 0; i < 72; i++) cout << '=';
+    cout << "\n";
+    string header = "L O G I N   S I S T E M";
+    int sp = (72 - (int)header.size()) / 2;
+    cout << string(sp, ' ') << header << "\n";
+    for (int i = 0; i < 72; i++) cout << '=';
+    cout << "\n" << Warna::RESET;
+
     while (sisa_kesempatan > 0) {
         try {
-            string input_nama = bacaString("Username : ");
-            string input_password = bacaString("Password : ");
+            string input_nama = bacaString("  Username : ");
+            string input_password = bacaString("  Password : ");
             
             for (int i = 0; i < total_akun; i++) {
                 if (input_nama == daftar_akun[i].username && input_password == daftar_akun[i].password) {
                     role_output = daftar_akun[i].role;
-                    cout << "\n[+] Login Berhasil! Selamat datang, " << input_nama << ".\n";
+                    cout << Warna::HIJAU << "\n[+] Login Berhasil! Selamat datang, " << input_nama << ".\n" << Warna::RESET;
                     if (role_output == "admin") catatLogAdmin("Login sukses: " + input_nama);
                     return input_nama;
                 }
             }
             sisa_kesempatan--;
-            if (sisa_kesempatan > 0) cout << "[!] Username atau Password salah! Sisa percobaan: " << sisa_kesempatan << "\n\n";
-        } catch (const exception &e) { cout << "[!] " << e.what() << "\n\n"; }
+            if (sisa_kesempatan > 0) cout << Warna::KUNING << "[!] Username atau Password salah! Sisa percobaan: " << sisa_kesempatan << Warna::RESET << "\n\n";
+        } catch (const exception &e) { cout << Warna::MERAH << "[!] " << e.what() << Warna::RESET << "\n\n"; }
     }
-    cout << "\n[X] Akses ditolak.\n"; jeda(); return "";
+    cout << Warna::MERAH << "\n[X] Akses ditolak.\n" << Warna::RESET; jeda(); return "";
 }
 
 string cekStatusKerja(string username, bool is_active, Absensi daftar_absensi[], int total_absensi) {
@@ -306,7 +363,6 @@ string cekStatusKerja(string username, bool is_active, Absensi daftar_absensi[],
 }
 
 void lihatPegawai(Pegawai daftar_pegawai[], int total_pegawai, bool filter_aktif, Absensi daftar_absensi[], int total_absensi) {
-    // Memperlebar batas tabel menjadi 146 dan menyesuaikan tata letak (Tanpa substr)
     cout << setfill('-') << setw(146) << "-" << "\n" << setfill(' ');
     cout << left << setw(15) << "Username" << setw(25) << "Nama" << setw(6)  << "Umur" 
          << setw(20) << "Jabatan" << setw(40) << "Alamat" << setw(20) << "Gaji" << "Status\n";
@@ -317,7 +373,6 @@ void lihatPegawai(Pegawai daftar_pegawai[], int total_pegawai, bool filter_aktif
         if (daftar_pegawai[i].is_active == filter_aktif) {
             ada_data = true; 
             string alamat = daftar_pegawai[i].lokasi.kota + ", " + daftar_pegawai[i].lokasi.jalan;
-            // Menghapus baris pemotong string (substr), membiarkan string tampil utuh
             cout << left << setw(15) << daftar_pegawai[i].username << setw(25) << daftar_pegawai[i].nama_pegawai << setw(6)  << daftar_pegawai[i].umur
                  << setw(20) << *(daftar_pegawai[i].jabatan_ptr) << setw(40) << alamat << setw(20) << formatRupiah(daftar_pegawai[i].gaji)  
                  << cekStatusKerja(daftar_pegawai[i].username, daftar_pegawai[i].is_active, daftar_absensi, total_absensi) << "\n";

@@ -7,21 +7,8 @@
 
 using namespace std;
 
-namespace Warna {
-    const string RESET   = "\033[0m";
-    const string MERAH   = "\033[31m";
-    const string HIJAU   = "\033[32m";
-    const string KUNING  = "\033[33m";
-    const string BIRU    = "\033[34m";
-    const string MAGENTA = "\033[35m";
-    const string CYAN    = "\033[36m";
-    const string PUTIH   = "\033[97m";
-    const string BOLD    = "\033[1m";
-    const string DIM     = "\033[2m";
-}
-
 void cetakBanner() {
-    cout << Warna::MERAH << Warna::BOLD;
+    cout << Warna::CYAN << Warna::BOLD;
     cout << "\n";
     cout << "              ██╗  ██╗███████╗██████╗  █████╗ ██████╗ \n";
     cout << "              ██║ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔══██╗\n";
@@ -30,13 +17,13 @@ void cetakBanner() {
     cout << "              ██║  ██╗███████╗██████╔╝██║  ██║██████╔╝\n";
     cout << "              ╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚═════╝ \n";
     cout << Warna::RESET;
-    cout << Warna::KUNING << Warna::BOLD;
-    cout << "          M A N A J E M E N   K E B A B   C E N D A N A\n";
+    cout << Warna::BIRU << Warna::BOLD;
+    cout << "            M A N A J E M E N   K E B A B   C E N D A N A\n";
     cout << Warna::RESET;
     cout << "\n";
-    cout << Warna::CYAN << Warna::BOLD;
-    cout << "                   Tanggal : " << dapatkanTanggalSekarang() << "\n";
-    cout << "                   Waktu   : " << dapatkanWaktuSekarang()   << "\n";
+    cout << Warna::DIM;
+    cout << "                     Tanggal : " << dapatkanTanggalSekarang() << "\n";
+    cout << "                     Waktu   : " << dapatkanWaktuSekarang()   << "\n";
     cout << Warna::RESET << "\n";
 }
 
@@ -92,7 +79,7 @@ int main() {
         cout << Warna::RESET << "\n";
 
         cout << "  " << Warna::CYAN << "1." << Warna::RESET << " Login Sistem\n";
-        cout << "  " << Warna::MERAH << "0. Keluar Aplikasi\n" << Warna::RESET;
+        cout << "  " << Warna::KUNING << "0. Keluar Aplikasi\n" << Warna::RESET;
         cout << Warna::DIM;
         for (int i = 0; i < 72; i++) cout << '=';
         cout << Warna::RESET << "\n";

@@ -4,6 +4,19 @@
 
 using namespace std;
 
+namespace Warna {
+    const string RESET   = "\033[0m";
+    const string MERAH   = "\033[31m";
+    const string HIJAU   = "\033[32m";
+    const string KUNING  = "\033[33m";
+    const string BIRU    = "\033[34m";
+    const string MAGENTA = "\033[35m";
+    const string CYAN    = "\033[36m";
+    const string PUTIH   = "\033[97m";
+    const string BOLD    = "\033[1m";
+    const string DIM     = "\033[2m";
+}
+
 struct Akun {
     string username;
     string password;
