@@ -10,7 +10,7 @@ Repositori ini merupakan tempat pengumpulan **Program**, **Flowchart**, dan **La
 📦 Proyek-Akhir-APL
 │
 ├── 📁 Flowchart
-│   └── flowchart.drawio (diagram alur logika sistem)
+│   └── C1_Kelompok6_ManajemenPegawaiKebabCendana_Flowchart.drawio (diagram alur logika sistem)
 │
 ├── 📁 Program
 │   ├── main.cpp (titik masuk utama dan alur menu)
@@ -23,6 +23,8 @@ Repositori ini merupakan tempat pengumpulan **Program**, **Flowchart**, dan **La
 │       ├── pegawai.csv (data profil dan gaji)
 │       └── log_admin.txt (catatan aktivitas tindakan admin)
 │
+├── 📁 Laporan
+│   └── C1_Kelompok6_ManajemenPegawaiKebabCendana_Laporan.pdf (Laporan Proyek Akhir APL)
 └── 📄 README.md
 </pre>
 
