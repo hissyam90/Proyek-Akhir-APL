@@ -8,7 +8,7 @@
 using namespace std;
 
 void cetakBanner() {
-    cout << Warna::CYAN << Warna::BOLD;
+    cout << Warna::MERAH << Warna::BOLD;
     cout << "\n";
     cout << "              ██╗  ██╗███████╗██████╗  █████╗ ██████╗ \n";
     cout << "              ██║ ██╔╝██╔════╝██╔══██╗██╔══██╗██╔══██╗\n";
@@ -17,7 +17,7 @@ void cetakBanner() {
     cout << "              ██║  ██╗███████╗██████╔╝██║  ██║██████╔╝\n";
     cout << "              ╚═╝  ╚═╝╚══════╝╚═════╝ ╚═╝  ╚═╝╚═════╝ \n";
     cout << Warna::RESET;
-    cout << Warna::BIRU << Warna::BOLD;
+    cout << Warna::KUNING << Warna::BOLD;
     cout << "            M A N A J E M E N   K E B A B   C E N D A N A\n";
     cout << Warna::RESET;
     cout << "\n";
